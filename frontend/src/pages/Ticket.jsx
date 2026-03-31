@@ -12,7 +12,6 @@ function Ticket() {
     dispatch(fetchTickets());
   }, [dispatch]);
 
-  console.log(tickets);
   const hanldeClick = (tktId) => {
     const id = tktId.split("_")[1];
     navigate(`/tickets/${id}`);
@@ -32,7 +31,9 @@ function Ticket() {
             onClick={() => hanldeClick(t.ticketId)}
           >
             <div className="flex flex-row-reverse">
-              <p className="text-end border flex px-1 bg-gray-300 font-semibold opacity-50 text-[10px] rounded ">{t.status}</p>
+              <p className="text-end border flex px-1 bg-gray-300 font-semibold opacity-50 text-[10px] rounded ">
+                {t.status}
+              </p>
             </div>
             <p className="font-semibold">{t.category}</p>
             <p className="text-end opacity-50 text-sm">

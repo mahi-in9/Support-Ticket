@@ -29,8 +29,6 @@ function TicketDetails() {
     setReply("");
   };
 
-  console.log(ticket);
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error?.message}</p>;
   return (
