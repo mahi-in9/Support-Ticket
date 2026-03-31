@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchTickets } from "../app/ticketSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Ticket() {
   const { tickets, loading, error } = useSelector((state) => state.ticket);
@@ -22,6 +22,8 @@ function Ticket() {
   return (
     <div className="m-3  ">
       <h2 className="text-2xl font-semibold text-center">Tickets</h2>
+
+      <Link to={"/tickets/new"}>Create Ticket</Link>
 
       <div className="w-1/2">
         {tickets.map((t) => (
