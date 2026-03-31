@@ -77,7 +77,7 @@ function TicketDetails() {
                     onChange={(e) => setReply(e.target.value)}
                     cols="15"
                     rows="5"
-                    className="w-5xl p-3 border rounded ml-[3rem]"
+                    className="w-5xl p-3 border rounded ml-12"
                   ></textarea>
                 </div>
                 <button
