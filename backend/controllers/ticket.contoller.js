@@ -42,7 +42,7 @@ async function getAllTickets(req, res) {
       status: t.status,
       createdAt: t.createdAt,
     }));
-    return res.status(200).json({ success: true, response });
+    return res.status(200).json({ response });
   } catch (error) {
     return res
       .status(500)
@@ -52,7 +52,7 @@ async function getAllTickets(req, res) {
 
 async function getTicketById(req, res) {
   try {
-    const { id } = req.query;
+    const { id } = req.params;
     if (!id) {
       return res.status(400).json({
         success: false,
@@ -85,7 +85,7 @@ async function getTicketById(req, res) {
 
 async function updateTicketStatus(req, res) {
   try {
-    const { id } = req.query;
+    const { id } = req.params;
     const { status } = req.body;
     const ticket = await Ticket.findByIdAndUpdate(
       id,
@@ -96,7 +96,7 @@ async function updateTicketStatus(req, res) {
       return res
         .status(404)
         .json({ success: false, message: "ticket not found" });
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ success: true, ticket });
   } catch (error) {
     return res
       .status(500)
@@ -106,7 +106,7 @@ async function updateTicketStatus(req, res) {
 
 async function updateAiReply(req, res) {
   try {
-    const { id } = req.query;
+    const { id } = req.params;
     const { reply } = req.body;
     const ticket = await Ticket.findByIdAndUpdate(
       id,
@@ -117,7 +117,7 @@ async function updateAiReply(req, res) {
       return res
         .status(400)
         .json({ success: false, message: "ticket not found" });
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ success: true, ticket });
   } catch (error) {
     return res
       .status(500)
