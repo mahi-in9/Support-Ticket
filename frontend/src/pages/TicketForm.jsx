@@ -43,7 +43,7 @@ function TicketForm() {
           <input
             type="text"
             name="name"
-            className="border mx-2 rounded "
+            className="border mx-2 rounded hover:shadow-gray-400 hover:shadow-xl p-2"
             value={ticketData.name}
             onChange={handleChange}
           />
@@ -53,7 +53,7 @@ function TicketForm() {
           <input
             type="email"
             name="email"
-            className="border mx-2 rounded "
+            className="border mx-2 rounded hover:shadow-gray-400 hover:shadow-xl p-2"
             value={ticketData.email}
             onChange={handleChange}
           />
@@ -64,14 +64,14 @@ function TicketForm() {
             name="description"
             value={ticketData.description}
             cols="100"
-            rows="10"
-            className="border mx-2 rounded "
+            rows="8"
+            className="border mx-2 p-5 rounded hover:shadow-gray-400 hover:shadow-xl duration-300"
             onChange={handleChange}
           ></textarea>
         </div>
         <div className="">
           <button
-            className=" border rounded py-2 px-3 cursor-pointer items-center"
+            className=" border rounded py-2 px-3 cursor-pointer items-center  bg-blue-400 hover:scale-105 duration-150 hover:bg-blue-500 text-white font-semibold"
             type="submit"
           >
             Submit

@@ -23,7 +23,14 @@ function Ticket() {
     <div className="m-3  ">
       <h2 className="text-2xl font-semibold text-center">Tickets</h2>
 
-      <Link to={"/tickets/new"}>Create Ticket</Link>
+      <div className="flex justify-center m-3">
+        <Link
+          to={"/tickets/new"}
+          className="bg-[#c2e7ff] px-2 py-1 rounded font-semibold shadow-sm hover:bg-[#46a3ff] active:bg-[#4d92d1] hover:scale-105 hover: duration-150 hover:shadow-md "
+        >
+          Create Ticket
+        </Link>
+      </div>
 
       <div className="w-1/2">
         {tickets.map((t) => (
