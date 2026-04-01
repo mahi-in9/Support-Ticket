@@ -19,14 +19,16 @@ const TicketDetail = () => {
   );
   const { user } = useSelector((state) => state.auth);
   const [reply, setReply] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
   const messagesEndRef = useRef(null);
 
   const isAdmin = user?.role === "ADMIN";
 
+  console.log("TicketDetail params:", { id, isAdmin, userRole: user?.role });
+
   // Fetch ticket and messages
   useEffect(() => {
+    console.log("Fetching ticket and messages for:", id);
     dispatch(getTicketById(id));
     dispatch(fetchTicketMessages(id));
   }, [dispatch, id]);
@@ -36,6 +38,7 @@ const TicketDetail = () => {
     let interval;
     if (ticket && !ticket.isAIProcessed) {
       interval = setInterval(() => {
+        console.log("Auto-refreshing ticket:", id);
         dispatch(getTicketById(id));
         dispatch(fetchTicketMessages(id));
       }, 3000);
@@ -60,11 +63,12 @@ const TicketDetail = () => {
   const handleSendReply = async () => {
     if (!reply.trim()) return;
 
+    console.log("Sending reply:", reply);
     const result = await dispatch(sendReply({ id, reply }));
     if (sendReply.fulfilled.match(result)) {
       setReply("");
-      setIsEditing(false);
       setSelectedSuggestion(null);
+      // Refetch messages after sending
       dispatch(fetchTicketMessages(id));
     }
   };
@@ -79,7 +83,6 @@ const TicketDetail = () => {
   const handleSelectSuggestion = (suggestion) => {
     setSelectedSuggestion(suggestion);
     setReply(suggestion);
-    setIsEditing(true);
   };
 
   const formatDate = (dateString) => {
@@ -99,9 +102,9 @@ const TicketDetail = () => {
 
   const getMessageStyle = (sender) => {
     if (sender === "USER") {
-      return "bg-indigo-600 text-white ml-auto rounded-br-none";
+      return "bg-indigo-600 text-white";
     } else if (sender === "ADMIN") {
-      return "bg-gray-600 text-white mr-auto rounded-bl-none";
+      return "bg-gray-600 text-white";
     } else if (sender === "AI") {
       return "bg-purple-100 text-purple-800 border border-purple-200";
     }
@@ -109,16 +112,20 @@ const TicketDetail = () => {
   };
 
   const getMessageAlignment = (sender) => {
-    if (sender === "USER") {
-      return "justify-end";
-    } else if (sender === "ADMIN") {
-      return "justify-start";
-    } else if (sender === "AI") {
-      return "justify-center";
-    }
+    if (sender === "USER") return "justify-end";
+    if (sender === "ADMIN") return "justify-start";
+    if (sender === "AI") return "justify-center";
     return "justify-start";
   };
 
+  const getSenderLabel = (sender) => {
+    if (sender === "USER") return "You";
+    if (sender === "ADMIN") return "Support Agent";
+    if (sender === "AI") return "AI Suggestion";
+    return sender;
+  };
+
+  // Loading state
   if (loading && !ticket) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -132,21 +139,22 @@ const TicketDetail = () => {
     );
   }
 
+  // Error state
   if (error && !ticket) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         <main className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="px-4 py-6 sm:px-0">
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-              {error?.message || "Failed to load ticket"}
-            </div>
             <button
               onClick={() => navigate(isAdmin ? "/admin" : "/dashboard")}
-              className="mt-4 text-indigo-600 hover:text-indigo-500"
+              className="mb-4 text-indigo-600 hover:text-indigo-500"
             >
               ← Back to Dashboard
             </button>
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+              Error: {error?.message || JSON.stringify(error)}
+            </div>
           </div>
         </main>
       </div>
@@ -179,9 +187,7 @@ const TicketDetail = () => {
                 </div>
                 <div className="flex items-center space-x-3">
                   <span
-                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                      ticket.status
-                    )}`}
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(ticket.status)}`}
                   >
                     {ticket.status}
                   </span>
@@ -208,7 +214,7 @@ const TicketDetail = () => {
                 <div className="flex justify-center py-4">
                   <Loader count={1} />
                 </div>
-              ) : messages.length === 0 ? (
+              ) : !messages || messages.length === 0 ? (
                 <p className="text-gray-500 text-center py-4">
                   No messages yet.
                 </p>
@@ -220,25 +226,11 @@ const TicketDetail = () => {
                       className={`flex ${getMessageAlignment(msg.sender)}`}
                     >
                       <div
-                        className={`max-w-md px-4 py-2 rounded-lg ${getMessageStyle(
-                          msg.sender
-                        )}`}
+                        className={`max-w-md px-4 py-3 rounded-lg ${getMessageStyle(msg.sender)}`}
                       >
-                        {msg.sender === "AI" && (
-                          <span className="block text-xs font-semibold mb-1 opacity-75">
-                            🤖 AI Suggestion
-                          </span>
-                        )}
-                        {msg.sender === "ADMIN" && (
-                          <span className="block text-xs font-semibold mb-1 opacity-75">
-                            👤 Support Agent
-                          </span>
-                        )}
-                        {msg.sender === "USER" && (
-                          <span className="block text-xs font-semibold mb-1 opacity-75">
-                            👤 You
-                          </span>
-                        )}
+                        <span className="text-xs font-semibold mb-1 block opacity-75">
+                          {getSenderLabel(msg.sender)}
+                        </span>
                         <p className="text-sm">{msg.message}</p>
                         <span className="text-xs opacity-75 mt-1 block">
                           {formatDate(msg.createdAt)}
@@ -318,7 +310,6 @@ const TicketDetail = () => {
                       <button
                         onClick={() => {
                           setReply(ticket.aiReply || "");
-                          setIsEditing(false);
                           setSelectedSuggestion(null);
                         }}
                         className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm"

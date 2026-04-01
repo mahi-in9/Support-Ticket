@@ -13,22 +13,31 @@ const authMiddleware = async (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
+    // Verify token and get decoded payload
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Log for debugging
+    console.log("JWT decoded:", decoded);
 
+    // Fetch user from database to get fresh role
     const user = await User.findById(decoded.id).select("-password");
+    
     if (!user) {
       return res.status(401).json({ msg: "User not found" });
     }
 
-    // Attach user with role to request
+    // Attach user info to request with role from database
     req.user = {
-      id: user._id,
+      id: user._id.toString(),
       email: user.email,
-      role: user.role,
+      role: user.role
     };
+    
+    console.log("req.user set:", req.user);
+    
     next();
   } catch (error) {
-    console.error(error);
+    console.error("Auth middleware error:", error.message);
     return res.status(403).json({ msg: "Invalid or expired token" });
   }
 };

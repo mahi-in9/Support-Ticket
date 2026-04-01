@@ -12,8 +12,11 @@ const AdminDashboard = () => {
   const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    console.log("AdminDashboard: Fetching ALL tickets...");
     dispatch(fetchTickets());
   }, [dispatch]);
+
+  console.log("AdminDashboard state:", { tickets, loading, error, userRole: user?.role });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -22,27 +25,25 @@ const AdminDashboard = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Admin Dashboard
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
               <p className="text-sm text-gray-500 mt-1">
-                Welcome, {user?.title} (Admin)
+                Welcome, {user?.title || user?.email} (Admin)
               </p>
             </div>
             <div className="text-sm text-gray-500">
-              Total Tickets: {tickets.length}
+              Total Tickets: {tickets?.length || 0}
             </div>
           </div>
 
           {error && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-              {error?.message || "Failed to load tickets"}
+              Error: {error?.message || JSON.stringify(error)}
             </div>
           )}
 
           {loading ? (
             <Loader count={5} />
-          ) : tickets.length === 0 ? (
+          ) : !tickets || tickets.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-lg shadow-md">
               <svg
                 className="mx-auto h-12 w-12 text-gray-400"

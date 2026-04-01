@@ -27,7 +27,7 @@ const TicketCard = ({ ticket, isAdmin = false }) => {
     }
     return (
       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-        {category}
+        {category || "OTHER"}
       </span>
     );
   };
@@ -37,9 +37,12 @@ const TicketCard = ({ ticket, isAdmin = false }) => {
     ? ticket.description 
     : ticket.description?.substring(0, 80) + (ticket.description?.length > 80 ? "..." : "");
 
+  // Link to correct route based on role
+  const ticketLink = isAdmin ? `/admin/tickets/${ticket.ticketId}` : `/tickets/${ticket.ticketId}`;
+
   return (
     <Link
-      to={`/tickets/${ticket.ticketId}`}
+      to={ticketLink}
       className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6"
     >
       <div className="flex items-center justify-between mb-3">
@@ -57,9 +60,7 @@ const TicketCard = ({ ticket, isAdmin = false }) => {
 
       <div className="flex items-center justify-between">
         <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-            ticket.status
-          )}`}
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}
         >
           {ticket.status}
         </span>
@@ -67,6 +68,12 @@ const TicketCard = ({ ticket, isAdmin = false }) => {
           {formatDate(ticket.createdAt)}
         </span>
       </div>
+      
+      {isAdmin && ticket.email && (
+        <p className="text-gray-500 text-xs mt-2">
+          {ticket.email}
+        </p>
+      )}
     </Link>
   );
 };

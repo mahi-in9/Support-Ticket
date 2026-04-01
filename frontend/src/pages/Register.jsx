@@ -1,101 +1,81 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser, clearError } from "../app/authSlice";
+import { registerUser } from "../app/authSlice";
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    title: "",
-    email: "",
-    password: "",
-  });
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, token } = useSelector((state) => state.auth);
+  const { loading, error, user, token } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (token) {
-      navigate("/dashboard");
+    // If already logged in, redirect
+    if (token && user) {
+      navigate(user.role === "ADMIN" ? "/admin" : "/dashboard");
     }
-    return () => {
-      dispatch(clearError());
-    };
-  }, [token, navigate, dispatch]);
+  }, [token, user, navigate]);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(registerUser(formData));
+    const title = e.target.title.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    const result = await dispatch(registerUser({ title, email, password }));
+
+    if (registerUser.fulfilled.match(result)) {
+      const newUser = result.payload.user;
+      console.log("Registration successful, user:", newUser);
+      navigate(newUser.role === "ADMIN" ? "/admin" : "/dashboard");
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">Register</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Create your account to get started
-          </p>
+          <h2 className="text-3xl font-bold text-gray-900">AI Support Ticket</h2>
+          <p className="mt-2 text-sm text-gray-600">Create a new account</p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-              {error}
+              {error?.message || JSON.stringify(error)}
             </div>
           )}
 
           <div className="space-y-4">
             <div>
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Full Name
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                Name
               </label>
               <input
                 id="title"
                 name="title"
                 type="text"
                 required
-                value={formData.title}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="John Doe"
+                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Your name"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email Address
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
                 required
-                value={formData.email}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="you@example.com"
+                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="your.email@example.com"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <input
@@ -103,9 +83,8 @@ const Register = () => {
                 name="password"
                 type="password"
                 required
-                value={formData.password}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                minLength={6}
+                className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="••••••••"
               />
             </div>
@@ -114,23 +93,18 @@ const Register = () => {
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
           >
-            {loading ? "Creating account..." : "Register"}
+            {loading ? "Creating account..." : "Create account"}
           </button>
-
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
-              >
-                Sign In
-              </Link>
-            </p>
-          </div>
         </form>
+
+        <div className="text-center text-sm text-gray-600">
+          Already have an account?{" "}
+          <Link to="/login" className="text-indigo-600 hover:text-indigo-500">
+            Sign in
+          </Link>
+        </div>
       </div>
     </div>
   );

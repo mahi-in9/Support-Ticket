@@ -35,24 +35,14 @@ const Navbar = () => {
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-gray-600 text-sm">
-              {user?.email} ({user?.role})
+              {user?.title || user?.email} ({user?.role})
             </span>
-            {isAdmin && (
-              <Link
-                to="/admin"
-                className="text-sm text-indigo-600 hover:text-indigo-800"
-              >
-                All Tickets
-              </Link>
-            )}
-            {!isAdmin && (
-              <Link
-                to="/create"
-                className="text-sm text-indigo-600 hover:text-indigo-800"
-              >
-                Create Ticket
-              </Link>
-            )}
+            <Link
+              to={isAdmin ? "/admin" : "/create"}
+              className="text-sm text-indigo-600 hover:text-indigo-800"
+            >
+              {isAdmin ? "All Tickets" : "Create Ticket"}
+            </Link>
             <button
               onClick={handleLogout}
               className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"

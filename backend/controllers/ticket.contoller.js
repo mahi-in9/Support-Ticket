@@ -2,6 +2,9 @@ const Ticket = require("../models/ticket.model");
 const Message = require("../models/message.model");
 const processWithAI = require("../service/ai.service");
 
+// Helper to check if user is admin
+const isUserAdmin = (user) => user && user.role === "ADMIN";
+
 // @desc Create a new ticket (USER)
 // @route POST /api/tickets
 // @access Private (Authenticated)
@@ -56,6 +59,8 @@ async function createTicket(req, res) {
 // @access Private (USER)
 async function getMyTickets(req, res) {
   try {
+    console.log("getMyTickets - req.user:", req.user);
+    
     const tickets = await Ticket.find({ userId: req.user.id }).sort({ createdAt: -1 });
 
     const response = tickets.map((t) => ({
@@ -85,6 +90,8 @@ async function getMyTickets(req, res) {
 // @access Private (ADMIN)
 async function getAllTickets(req, res) {
   try {
+    console.log("getAllTickets - req.user:", req.user);
+    
     const tickets = await Ticket.find().sort({ createdAt: -1 });
 
     const response = tickets.map((t) => ({
@@ -118,7 +125,9 @@ async function getAllTickets(req, res) {
 async function getTicketById(req, res) {
   try {
     const { id } = req.params;
-    const userRole = req.user.role;
+    const isAdmin = isUserAdmin(req.user);
+
+    console.log("getTicketById - params:", { id, userId: req.user.id, role: req.user.role, isAdmin });
 
     const ticket = await Ticket.findById(id);
 
@@ -129,8 +138,11 @@ async function getTicketById(req, res) {
       });
     }
 
-    // User can only access own ticket
-    if (userRole !== "ADMIN" && ticket.userId?.toString() !== req.user.id) {
+    console.log("getTicketById - ticket.userId:", ticket.userId?.toString(), "req.user.id:", req.user.id);
+
+    // User can only access own ticket (unless admin)
+    if (!isAdmin && ticket.userId?.toString() !== req.user.id) {
+      console.log("Access denied for user:", req.user.id, "on ticket:", id);
       return res.status(403).json({
         success: false,
         message: "Access denied. You can only view your own tickets.",
@@ -147,7 +159,7 @@ async function getTicketById(req, res) {
         description: ticket.description,
         category: ticket.category,
         aiReply: ticket.aiReply,
-        suggestedReplies: ticket.suggestedReplies,
+        suggestedReplies: ticket.suggestedReplies || [],
         confidence: ticket.confidence,
         status: ticket.status,
         isAIProcessed: ticket.isAIProcessed,
@@ -170,7 +182,9 @@ async function getTicketById(req, res) {
 async function getTicketMessages(req, res) {
   try {
     const { id } = req.params;
-    const userRole = req.user.role;
+    const isAdmin = isUserAdmin(req.user);
+
+    console.log("getTicketMessages - params:", { id, userId: req.user.id, isAdmin });
 
     const ticket = await Ticket.findById(id);
 
@@ -181,8 +195,9 @@ async function getTicketMessages(req, res) {
       });
     }
 
-    // User can only access own ticket
-    if (userRole !== "ADMIN" && ticket.userId?.toString() !== req.user.id) {
+    // User can only access own ticket messages (unless admin)
+    if (!isAdmin && ticket.userId?.toString() !== req.user.id) {
+      console.log("Access denied for messages - user:", req.user.id, "ticket:", id);
       return res.status(403).json({
         success: false,
         message: "Access denied. You can only view your own tickets.",
@@ -217,7 +232,7 @@ async function sendReply(req, res) {
   try {
     const { id } = req.params;
     const { reply } = req.body;
-    const userRole = req.user.role;
+    const isAdmin = isUserAdmin(req.user);
 
     if (!reply) {
       return res.status(400).json({
@@ -235,8 +250,8 @@ async function sendReply(req, res) {
       });
     }
 
-    // User can only reply to own ticket
-    if (userRole !== "ADMIN" && ticket.userId?.toString() !== req.user.id) {
+    // User can only reply to own ticket (unless admin)
+    if (!isAdmin && ticket.userId?.toString() !== req.user.id) {
       return res.status(403).json({
         success: false,
         message: "Access denied. You can only reply to your own tickets.",
@@ -244,7 +259,7 @@ async function sendReply(req, res) {
     }
 
     // Determine sender type
-    const sender = userRole === "ADMIN" ? "ADMIN" : "USER";
+    const sender = isAdmin ? "ADMIN" : "USER";
 
     // Create message
     const message = await Message.create({
@@ -326,7 +341,7 @@ async function updateTicketStatus(req, res) {
 
 // @desc Update AI reply (ADMIN only)
 // @route POST /api/tickets/:id/reply
-// @access Private (ADMIN) - Legacy, now handled by sendReply
+// @access Private (ADMIN)
 async function updateAiReply(req, res) {
   try {
     const { id } = req.params;
