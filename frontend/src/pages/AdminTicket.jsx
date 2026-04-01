@@ -7,9 +7,10 @@ import {
 } from "../app/ticketSlice";
 import { useParams } from "react-router-dom";
 
-function TicketDetails() {
+function AdminTicket() {
   const { ticket, loading, error } = useSelector((state) => state.ticket);
   const [status, setStatus] = useState("");
+  const [reply, setReply] = useState("");
   const dispatch = useDispatch();
   const { id } = useParams();
 
@@ -20,6 +21,12 @@ function TicketDetails() {
   const handleStatus = (e) => {
     e.preventDefault();
     dispatch(updateTicketStatus({ id, status: status }));
+  };
+
+  const handleReply = (e) => {
+    e.preventDefault();
+    dispatch(updateTicketReply({ id, reply: reply }));
+    setReply("");
   };
 
   if (loading) return <p>Loading...</p>;
@@ -58,6 +65,27 @@ function TicketDetails() {
                   Change Status
                 </button>
               </form>
+              <form className="flex flex-col">
+                <div>
+                  <label className="flex flex-row">Reply:</label>
+                  <textarea
+                    type="text"
+                    name="reply"
+                    value={reply}
+                    onChange={(e) => setReply(e.target.value)}
+                    cols="15"
+                    rows="5"
+                    className="w-5xl p-3 border rounded ml-12"
+                  ></textarea>
+                </div>
+                <button
+                  className="py-1 px-2 bg-blue-400 rounded cursor-pointer text-white font-semibold w-fit"
+                  type="submit"
+                  onClick={handleReply}
+                >
+                  Change Reply
+                </button>
+              </form>
             </div>
           </>
         ) : (
@@ -68,4 +96,4 @@ function TicketDetails() {
   );
 }
 
-export default TicketDetails;
+export default AdminTicket;
