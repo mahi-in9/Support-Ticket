@@ -1,63 +1,64 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../api/api";
+import axiosInstance from "../utils/axiosInstance";
 
 export const createTicket = createAsyncThunk(
   "ticket/createTicket",
   async (ticketData, thunkAPI) => {
     try {
-      const res = await api.post(`/api/tickets`, ticketData);
+      const res = await axiosInstance.post("/tickets", ticketData);
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error?.response?.data);
     }
-  },
+  }
 );
 
 export const fetchTickets = createAsyncThunk(
-  "ticket/getAllId",
+  "ticket/getAll",
   async (_, thunkAPI) => {
     try {
-      const res = await api.get(`/api/tickets`);
-      return res.data.response;
+      const res = await axiosInstance.get("/tickets");
+      return res.data.tickets;
     } catch (error) {
       return thunkAPI.rejectWithValue(error?.response?.data);
     }
-  },
+  }
 );
 
 export const getTicketById = createAsyncThunk(
   "ticket/ticketById",
   async (id, thunkAPI) => {
     try {
-      const res = await api.get(`/api/tickets/${id}`);
-      return res.data;
+      const res = await axiosInstance.get(`/tickets/${id}`);
+      return res.data.ticket;
     } catch (error) {
       return thunkAPI.rejectWithValue(error?.response?.data);
     }
-  },
+  }
 );
 
 export const updateTicketStatus = createAsyncThunk(
   "ticket/ticketStatus",
   async ({ id, status }, thunkAPI) => {
     try {
-      const res = await api.post(`/api/tickets/${id}/status`, { status });
+      const res = await axiosInstance.post(`/tickets/${id}/status`, { status });
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error?.response?.data);
     }
-  },
+  }
 );
+
 export const updateTicketReply = createAsyncThunk(
   "ticket/ticketsreply",
   async ({ id, reply }, thunkAPI) => {
     try {
-      const res = await api.post(`/api/tickets/${id}/reply`, { reply });
+      const res = await axiosInstance.post(`/tickets/${id}/reply`, { reply });
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error?.response?.data);
     }
-  },
+  }
 );
 
 const initialState = {
@@ -78,7 +79,7 @@ const ticketSlice = createSlice({
       })
       .addCase(createTicket.fulfilled, (state, action) => {
         state.loading = false;
-        state.ticket = action.payload;
+        state.ticket = action.payload.ticket;
         state.error = null;
       })
       .addCase(createTicket.rejected, (state, action) => {

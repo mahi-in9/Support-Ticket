@@ -5,6 +5,7 @@ const ticketSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true },
     description: { type: String, required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     status: {
       type: String,
       enum: ["OPEN", "PENDING", "RESOLVED"],
@@ -16,6 +17,7 @@ const ticketSchema = new mongoose.Schema(
       default: "OTHER",
     },
     aiReply: String,
+    suggestedReplies: [String],
     confidence: Number,
     priority: {
       type: String,

@@ -5,60 +5,126 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_API_KEY,
 });
 
+// Normalize category
+const normalizeCategory = (category) => {
+  const valid = ["PAYMENT", "LOGIN", "BUG", "OTHER"];
+  if (!category) return "OTHER";
+
+  const upper = category.toUpperCase();
+  return valid.includes(upper) ? upper : "OTHER";
+};
+
+// Extract JSON safely
+const extractJSON = (text) => {
+  try {
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+
+    if (start === -1 || end === -1) return null;
+
+    const jsonString = text.substring(start, end + 1);
+
+    return JSON.parse(jsonString);
+  } catch {
+    return null;
+  }
+};
+
+// Fallback
+const fallback = {
+  category: "OTHER",
+  replies: [
+    "We are reviewing your issue and will get back to you shortly.",
+    "Thank you for contacting us. Our team is looking into this.",
+    "We apologize for the inconvenience. Please allow us to investigate.",
+  ],
+  confidence: 0.5,
+};
+
 async function processWithAI(ticketId) {
   try {
     const ticket = await Ticket.findById(ticketId);
 
-    const prompt = `You are a support assistant.
-This is the given description: ${ticket.description}
+    if (!ticket) throw new Error("Ticket not found");
 
-Classify into: PAYMENT, LOGIN, BUG, OTHER
-Generate a short professional reply.
+    const prompt = `
+You are a support assistant.
 
-Respond ONLY in JSON:
+Strictly return ONLY valid JSON.
+
+Rules:
+- No explanation
+- No markdown
+- Category must be one of: PAYMENT, LOGIN, BUG, OTHER
+- Return exactly 3-4 short professional replies (1-2 lines each)
+- Each reply should be different but professional
+
+Format:
 {
-  "category": "...",
-  "reply": "...",
-  "confidence": 0.0-1.0
-}`;
+  "category": "PAYMENT",
+  "replies": [
+    "First short professional reply",
+    "Second short professional reply",
+    "Third short professional reply",
+    "Fourth short professional reply"
+  ],
+  "confidence": 0.0
+}
+
+User Issue:
+"${ticket.description}"
+`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
     });
 
-    const text = response?.candidates?.[0]?.content?.parts?.[0]?.text;
+    // ✅ Always use .text (stable API)
+    const rawText = response.text;
 
-    if (!text) throw new Error("No AI response");
+    if (!rawText) throw new Error("Empty AI response");
 
-    // ✅ Remove markdown
-    const cleanedText = text
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
+    const parsed = extractJSON(rawText);
 
-    let parsed;
+    let finalData;
+    if (parsed && parsed.replies && Array.isArray(parsed.replies)) {
+      // Ensure we have 3-4 replies
+      const validReplies = parsed.replies.slice(0, 4);
+      while (validReplies.length < 3) {
+        validReplies.push("Our team will respond to your issue shortly.");
+      }
 
-    try {
-      parsed = JSON.parse(cleanedText);
-    } catch (err) {
-      console.error("Invalid JSON from AI:", cleanedText);
-
-      parsed = {
-        category: "OTHER",
-        reply: "We are reviewing your issue.",
-        confidence: 0,
+      finalData = {
+        category: normalizeCategory(parsed.category),
+        suggestedReplies: validReplies,
+        aiReply: validReplies[0], // Default to first suggested reply
+        confidence:
+          typeof parsed.confidence === "number" ? parsed.confidence : 0.7,
+      };
+    } else {
+      finalData = {
+        ...fallback,
+        suggestedReplies: fallback.replies,
+        aiReply: fallback.replies[0],
       };
     }
 
     await Ticket.findByIdAndUpdate(ticketId, {
-      category: parsed.category || "OTHER",
-      aiReply: parsed.reply || "",
-      confidence: parsed.confidence || 0,
+      ...finalData,
       isAIProcessed: true,
     });
   } catch (error) {
-    console.error("AI failed:", error.message);
+    console.error("AI processing failed:", error.message);
+
+    // Update with fallback
+    await Ticket.findByIdAndUpdate(ticketId, {
+      category: "OTHER",
+      suggestedReplies: fallback.replies,
+      aiReply: fallback.replies[0],
+      confidence: fallback.confidence,
+      isAIProcessed: true,
+    });
   }
 }
 
