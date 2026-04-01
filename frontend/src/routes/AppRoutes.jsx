@@ -50,14 +50,6 @@ const AppRoutes = () => {
           </AdminRoute>
         }
       />
-      <Route
-        path="/admin/tickets/:id"
-        element={
-          <AdminRoute>
-            <TicketDetail />
-          </AdminRoute>
-        }
-      />
 
       {/* Default redirect */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

@@ -2,13 +2,26 @@ const mongoose = require("mongoose");
 
 const ticketSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    description: { type: String, required: true },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
     status: {
       type: String,
-      enum: ["OPEN", "PENDING", "RESOLVED"],
+      enum: ["OPEN", "RESOLVED"],
       default: "OPEN",
     },
     category: {
@@ -16,19 +29,25 @@ const ticketSchema = new mongoose.Schema(
       enum: ["PAYMENT", "LOGIN", "BUG", "OTHER"],
       default: "OTHER",
     },
-    aiReply: String,
-    suggestedReplies: [String],
-    confidence: Number,
-    priority: {
+    aiReply: {
       type: String,
-      enum: ["LOW", "MEDIUM", "HIGH"],
-      default: "MEDIUM",
+      default: "",
     },
-    isAIProcessed: { type: Boolean, default: false },
+    suggestedReplies: [{
+      type: String,
+    }],
+    confidence: {
+      type: Number,
+      default: 0,
+    },
+    isAIProcessed: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 module.exports = mongoose.model("Ticket", ticketSchema);

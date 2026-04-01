@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-const TicketCard = ({ ticket }) => {
+const TicketCard = ({ ticket, isAdmin = false }) => {
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -21,7 +21,7 @@ const TicketCard = ({ ticket }) => {
     if (!isAIProcessed) {
       return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-          Processing AI...
+          Processing...
         </span>
       );
     }
@@ -32,21 +32,27 @@ const TicketCard = ({ ticket }) => {
     );
   };
 
+  // For admin, show full description. For user, truncate.
+  const description = isAdmin 
+    ? ticket.description 
+    : ticket.description?.substring(0, 80) + (ticket.description?.length > 80 ? "..." : "");
+
   return (
     <Link
       to={`/tickets/${ticket.ticketId}`}
       className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6"
     >
       <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-semibold text-gray-900 truncate flex-1 mr-4">
-          {ticket.description?.substring(0, 50)}
-          {ticket.description?.length > 50 ? "..." : ""}
-        </p>
+        {isAdmin && ticket.name && (
+          <p className="text-sm font-semibold text-gray-900">
+            {ticket.name}
+          </p>
+        )}
         {getCategoryBadge(ticket.category, ticket.isAIProcessed)}
       </div>
 
       <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-        {ticket.description}
+        {description}
       </p>
 
       <div className="flex items-center justify-between">

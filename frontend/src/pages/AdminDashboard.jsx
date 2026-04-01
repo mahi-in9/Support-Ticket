@@ -26,7 +26,7 @@ const AdminDashboard = () => {
                 Admin Dashboard
               </h1>
               <p className="text-sm text-gray-500 mt-1">
-                Welcome, {user?.title} ({user?.role})
+                Welcome, {user?.title} (Admin)
               </p>
             </div>
             <div className="text-sm text-gray-500">
@@ -67,7 +67,7 @@ const AdminDashboard = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {tickets.map((ticket) => (
-                <TicketCard key={ticket.ticketId} ticket={ticket} />
+                <TicketCard key={ticket.ticketId} ticket={ticket} isAdmin={true} />
               ))}
             </div>
           )}

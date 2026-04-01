@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchTickets } from "../app/ticketSlice";
+import { fetchMyTickets } from "../app/ticketSlice";
 import Navbar from "../components/Navbar";
 import Loader from "../components/Loader";
 import TicketCard from "../components/TicketCard";
@@ -9,9 +9,10 @@ import TicketCard from "../components/TicketCard";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const { tickets, loading, error } = useSelector((state) => state.ticket);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(fetchTickets());
+    dispatch(fetchMyTickets());
   }, [dispatch]);
 
   return (
@@ -20,7 +21,12 @@ const Dashboard = () => {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">My Tickets</h1>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">My Tickets</h1>
+              <p className="text-sm text-gray-500 mt-1">
+                Welcome, {user?.title}
+              </p>
+            </div>
             <Link
               to="/create"
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

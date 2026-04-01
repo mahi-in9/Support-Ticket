@@ -1,4 +1,5 @@
 const Ticket = require("../models/ticket.model");
+const Message = require("../models/message.model");
 const { GoogleGenAI } = require("@google/genai");
 
 const ai = new GoogleGenAI({
@@ -88,6 +89,8 @@ User Issue:
     const parsed = extractJSON(rawText);
 
     let finalData;
+    let aiMessage;
+
     if (parsed && parsed.replies && Array.isArray(parsed.replies)) {
       // Ensure we have 3-4 replies
       const validReplies = parsed.replies.slice(0, 4);
@@ -101,19 +104,32 @@ User Issue:
         aiReply: validReplies[0], // Default to first suggested reply
         confidence:
           typeof parsed.confidence === "number" ? parsed.confidence : 0.7,
+        isAIProcessed: true,
       };
+
+      aiMessage = validReplies[0];
     } else {
       finalData = {
-        ...fallback,
+        category: "OTHER",
         suggestedReplies: fallback.replies,
         aiReply: fallback.replies[0],
+        confidence: fallback.confidence,
+        isAIProcessed: true,
       };
+
+      aiMessage = fallback.replies[0];
     }
 
-    await Ticket.findByIdAndUpdate(ticketId, {
-      ...finalData,
-      isAIProcessed: true,
+    // Update ticket with AI data
+    await Ticket.findByIdAndUpdate(ticketId, finalData);
+
+    // Create AI message in the thread
+    await Message.create({
+      ticketId: ticketId,
+      sender: "AI",
+      message: aiMessage,
     });
+
   } catch (error) {
     console.error("AI processing failed:", error.message);
 
@@ -124,6 +140,13 @@ User Issue:
       aiReply: fallback.replies[0],
       confidence: fallback.confidence,
       isAIProcessed: true,
+    });
+
+    // Create fallback AI message
+    await Message.create({
+      ticketId: ticketId,
+      sender: "AI",
+      message: fallback.replies[0],
     });
   }
 }
