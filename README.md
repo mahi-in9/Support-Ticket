@@ -10,12 +10,16 @@ A full-stack ticket management application that allows users to create support t
 
 👉 **Live URL:**
 https://support-ticket-one.vercel.app/
+
 ---
 
 ---
+
 # Backend Api
+
 👉 **Live URL:**
 https://support-ticket-0hwg.onrender.com/
+
 ---
 
 # ⚙️ Tech Stack
@@ -163,7 +167,10 @@ http://localhost:5173
 
 ```json
 {
-  "success": true, ticket
+  "category": "PAYMENT",
+  "reply": "We’re sorry for the inconvenience. Please share transaction
+  details.",
+  "confidence": 0.92
 }
 ```
 
