@@ -17,6 +17,24 @@ The **AI Support Ticket Assistant** is a modern support ticket management system
 
 ---
 
+## 🌐 Hosted URL
+
+> **Note**: Update these URLs when deploying
+
+- **Frontend**: https://support-ticket-one.vercel.app
+- **Backend**: https://support-ticket-0hwg.onrender.com/
+
+---
+
+## 🧪 Demo Credentials
+
+Admin:
+email: admin@example.com  
+password: Admin@123
+
+User:
+Create via register endpoint
+
 ## ✨ Features
 
 ### User Features
@@ -207,24 +225,6 @@ POST /api/auth/login
   - Mark tickets as resolved
 
 ---
-
-## 🌐 Hosted URL
-
-> **Note**: Update these URLs when deploying
-
-- **Frontend**: https://support-ticket-one.vercel.app
-- **Backend**: https://support-ticket-0hwg.onrender.com/
-
----
-
-## 🧪 Demo Credentials
-
-Admin:
-email: admin@example.com  
-password: Admin@123
-
-User:
-Create via register endpoint
 
 ## 📡 API Endpoints
 
