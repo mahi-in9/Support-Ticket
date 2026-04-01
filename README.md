@@ -173,9 +173,6 @@ http://localhost:5173
   "confidence": 0.92
 }
 ```
-
-- Frontend expects backend to always return updated ticket after mutation
-
 ---
 
 # 🧠 Design Decisions
