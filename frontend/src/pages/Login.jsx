@@ -34,10 +34,17 @@ const Login = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">AI Support Ticket</h2>
+          <h2 className="text-3xl font-bold text-gray-900">
+            AI Support Ticket
+          </h2>
           <p className="mt-2 text-sm text-gray-600">Sign in to your account</p>
         </div>
-
+        <p>User this credentials to login as admin</p>
+        /************* ✨ Windsurf Command ⭐ *************/
+        <p className="text-sm text-gray-600">
+          Email: mahi@admin.com, Password: 1234
+        </p>
+        /******* 87f79348-1609-48a6-ad1d-632980df32b9 *******/
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
@@ -47,7 +54,10 @@ const Login = () => {
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email
               </label>
               <input
@@ -61,7 +71,10 @@ const Login = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <input
@@ -83,10 +96,12 @@ const Login = () => {
             {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>
-
         <div className="text-center text-sm text-gray-600">
           Don't have an account?{" "}
-          <Link to="/register" className="text-indigo-600 hover:text-indigo-500">
+          <Link
+            to="/register"
+            className="text-indigo-600 hover:text-indigo-500"
+          >
             Register
           </Link>
         </div>
