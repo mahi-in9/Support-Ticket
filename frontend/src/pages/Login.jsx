@@ -39,12 +39,10 @@ const Login = () => {
           </h2>
           <p className="mt-2 text-sm text-gray-600">Sign in to your account</p>
         </div>
-        <p>User this credentials to login as admin</p>
-        /************* ✨ Windsurf Command ⭐ *************/
+        <p>Use this credentials to login as admin</p>\
         <p className="text-sm text-gray-600">
           Email: mahi@admin.com, Password: 1234
         </p>
-        /******* 87f79348-1609-48a6-ad1d-632980df32b9 *******/
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
