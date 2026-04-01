@@ -1,205 +1,224 @@
-# Support-Ticket
+# AI Support Ticket Assistant
 
-# 📌 Ticket Management System (AI-Powered Support)
-
-A full-stack ticket management application that allows users to create support tickets, automatically process them using AI, and manage ticket status and replies through an admin interface.
+A full-stack web application where users can submit support tickets, and an AI system automatically categorizes issues and generates multiple suggested replies. The system includes role-based access with Admin and User panels.
 
 ---
 
-# 🚀 Hosted Application
+## 📋 Project Description
 
-👉 **Live URL:**
-https://support-ticket-one.vercel.app/
+The **AI Support Ticket Assistant** is a modern support ticket management system that leverages artificial intelligence to streamline customer support operations.
 
----
+### Key Highlights:
 
----
-
-# Backend Api
-
-👉 **Live URL:**
-https://support-ticket-0hwg.onrender.com/
+- **AI-Powered Categorization**: Automatically classifies tickets into categories (PAYMENT, LOGIN, BUG, OTHER) using Google Gemini API
+- **Multiple Reply Suggestions**: Generates 3-4 professional reply options for each ticket
+- **Role-Based Access**: Separate Admin and User dashboards with appropriate permissions
+- **Asynchronous Processing**: AI processes tickets in the background without blocking the main thread
 
 ---
 
-# ⚙️ Tech Stack
+## ✨ Features
+
+### User Features
+
+- ✅ Submit support tickets (name, email, description)
+- ✅ View own tickets in a responsive grid layout
+- ✅ View AI-generated category
+- ✅ View multiple suggested AI replies
+- ✅ Real-time status updates
+
+### Admin Features
+
+- ✅ View all tickets from all users
+- ✅ Update ticket status (OPEN → RESOLVED)
+- ✅ Edit or select from AI-generated replies
+- ✅ Access full ticket details
+- ✅ Mark tickets as resolved
+
+### AI Features
+
+- ✅ Categorizes tickets: PAYMENT, LOGIN, BUG, OTHER
+- ✅ Generates 3-4 short professional reply suggestions
+- ✅ Provides confidence scores
+- ✅ Safe JSON extraction with fallback responses
+- ✅ Auto-refreshes ticket while processing
+
+---
+
+## 🛠️ Tech Stack
 
 ### Frontend
 
-- React (Vite)
-- Redux Toolkit
-- React Router
-- Axios
-- Tailwind CSS
+- **React** (Vite)
+- **Redux Toolkit** (State Management)
+- **React Router DOM** (Routing)
+- **Tailwind CSS** (Styling)
+- **Axios** (HTTP Client)
 
 ### Backend
 
-- Node.js
-- Express.js
-- MongoDB (Mongoose)
-- AI Service Integration (Google-Genai)
+- **Node.js**
+- **Express.js**
+- **MongoDB** (Mongoose ODM)
+
+### AI
+
+- **Google Gemini API** (@google/genai)
 
 ---
 
-# 📂 Project Setup
+## 🚀 Setup Instructions
 
-## 1. Clone Repository
+### Prerequisites
+
+- Node.js (v18+)
+- MongoDB (local or Atlas)
+- Google Gemini API Key
+
+### Backend Setup
 
 ```bash
-git clone https://github.com/mahi-in9/Support-Ticket.git
-cd Support-Ticket
+# Clone the repository
+git clone <repository-url>
+cd support-ticket
+
+# Navigate to backend
+cd backend
+
+# Install dependencies
+npm install
+
+# Create .env file
 ```
 
----
+Create a `.env` file in the `backend` directory:
 
-## 2. Backend Setup
+```env
+PORT=5000
+NODE_ENV=development
+FRONTEND_URL=http://localhost:5173
+
+# MongoDB
+MONGO_URI=mongodb://localhost:27017/support-ticket
+
+# JWT
+JWT_SECRET=your-super-secret-key-change-in-production
+
+# Google Gemini AI
+GOOGLE_API_KEY=your-google-api-key-here
+
+# Admin Secret Key (for seeding admin users)
+ADMIN_SECRET_KEY=my-super-secret-admin-key-2024
+```
 
 ```bash
-cd backend
+# Start the backend server
+npm run dev
+```
+
+### Frontend Setup
+
+```bash
+# Navigate to frontend
+cd frontend
+
+# Install dependencies
 npm install
 ```
 
-### Create `.env` file
+Create a `.env` file in the `frontend` directory:
 
 ```env
-PORT=3000
-MONGO_URI=your_mongodb_connection_string
-GOOGLE_API_KEY=your_ai_api_key
-FRONTEND_URL=your_frontend_url
+VITE_API_URL=http://localhost:5000/api
 ```
 
-### Run Backend
-
 ```bash
+# Start the frontend server
 npm run dev
 ```
 
-Backend runs on:
+---
 
-```
-http://localhost:3000
-```
+## 🖥️ How to Run Locally
+
+1. **Start Backend**: Navigate to `backend` folder and run `npm run dev`
+2. **Start Frontend**: Navigate to `frontend` folder and run `npm run dev`
+3. **Open Browser**: Go to `http://localhost:5173`
 
 ---
 
-## 3. Frontend Setup
+## 🌐 Hosted URL
 
-```bash
-cd frontend
-npm install
-```
+> **Note**: Update these URLs when deploying
 
-### Create `.env` file
-
-```env
-VITE_API_URL=your_backend_url
-```
-
-### Run Frontend
-
-```bash
-npm run dev
-```
-
-Frontend runs on:
-
-```
-http://localhost:5173
-```
+- **Frontend**: `<your deployed frontend URL>`
+- **Backend**: `<your deployed backend URL>`
 
 ---
 
-# 🧪 How to Run Locally
+## 📡 API Endpoints
 
-1. Start backend server:
+### Authentication Routes
 
-```bash
-cd backend
-npm run dev
-```
+| Method | Endpoint | Description | Access |
+|--------|----------|-------------|--------|
+| POST | `/api/auth/register` | Register new user | Public |
+| POST | `/api/auth/login` | Login user | Public |
+| GET | `/api/auth/me` | Get current user | Protected |
 
-2. Start frontend:
+### Ticket Routes
 
-```bash
-cd frontend
-npm run dev
-```
-
-3. Open browser:
-
-```
-http://localhost:5173
-```
+| Method | Endpoint | Description | Access |
+|--------|----------|-------------|--------|
+| POST | `/api/tickets` | Create new ticket | Authenticated |
+| GET | `/api/tickets` | Get all tickets | Admin Only |
+| GET | `/api/tickets/:id` | Get ticket by ID | Owner/Admin |
+| POST | `/api/tickets/:id/status` | Update ticket status | Admin Only |
+| POST | `/api/tickets/:id/reply` | Update AI reply | Admin Only |
 
 ---
 
-# 📌 Features
+## 📝 Assumptions Made
 
-- Create support tickets (name, email, description)
-- AI-based ticket processing & categorization
-- View all tickets
-- View ticket details
-- Update ticket status (OPEN / PENDING / RESOLVED)
-- Clean UI with loading & error states
-
----
-
-# 🔁 API Endpoints
-
-| Method | Endpoint                | Description           |
-| ------ | ----------------------- | --------------------- |
-| POST   | /api/tickets            | Create ticket         |
-| GET    | /api/tickets            | Get all tickets       |
-| GET    | /api/tickets/:id        | Get ticket by ID      |
-| POST   | /api/tickets/:id/status | Update ticket status  |
-| POST   | /api/tickets/:id/reply  | Update AI/admin reply |
+- ❌ No email verification implemented
+- ❌ Basic JWT authentication (no refresh tokens)
+- ❌ AI processing is asynchronous and non-blocking
+- ❌ Admin role is predefined or manually assigned via seed endpoint
+- ❌ No pagination implemented for tickets
+- ❌ Simple UI focused on core functionality
 
 ---
 
-# ⚠️ Assumptions Made
+## 🔮 Future Improvements
 
-- AI processing is asynchronous and triggered immediately after ticket creation
-- Ticket is defined in service folder individally
-- Ticket status defaults to `OPEN`
-- No authentication system implemented (admin/user separation assumed)
-- MongoDB is used as primary database
-- API responses follow a consistent structure:
-
-```json
-{
-  "category": "PAYMENT",
-  "reply": "We’re sorry for the inconvenience. Please share transaction
-  details.",
-  "confidence": 0.92
-}
-```
----
-
-# 🧠 Design Decisions
-
-- Redux Toolkit used for centralized state management
-- Async thunks handle API communication
-- Separation of concerns:
-  - Controllers → API logic
-  - Services → AI processing
-
-- Minimal UI to focus on functionality
+- Add real-time updates using WebSockets
+- Add ticket priority detection (LOW, MEDIUM, HIGH)
+- Add pagination and filtering for tickets
+- Add email notifications for ticket updates
+- Add retry mechanism for AI failures
+- Add user profile management
+- Add ticket assignment to support agents
 
 ---
 
-# 🛠️ Future Improvements
+## 📦 Notes
 
-- Add authentication (JWT)
-- Role-based access (Admin/User)
-- Ticket threads
-- Pagination & filtering
-- Better error handling (global middleware)
+- The AI processing happens asynchronously - tickets are created immediately while AI generates suggestions in the background
+- The frontend auto-refreshes ticket details every 3 seconds while AI is processing
+- Admin users can select from suggested replies or create custom responses
+- Regular users can view AI suggestions but cannot modify them
+- All API responses follow a consistent format with `success`, `message`, and `data` fields
+
+---
+
+## 🔐 Security
+
+- Passwords are hashed using bcrypt (10 rounds)
+- JWT tokens expire after 7 days
+- Users can only access their own tickets
+- Admin routes are protected with role-based middleware
+- Authorization headers are required for protected endpoints
 
 ---
 
-# 👨‍💻 Author
-
-Mahendra
-Full Stack Developer (MERN)
-
----
+**Built with ❤️ using the MERN Stack and Google Gemini AI**
