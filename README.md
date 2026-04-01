@@ -79,7 +79,7 @@ The **AI Support Ticket Assistant** is a modern support ticket management system
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/mahi-in9/Support-Ticket.git
 cd support-ticket
 
 # Navigate to backend
@@ -108,7 +108,7 @@ JWT_SECRET=your-super-secret-key-change-in-production
 GOOGLE_API_KEY=your-google-api-key-here
 
 # Admin Secret Key (for seeding admin users)
-ADMIN_SECRET_KEY=my-super-secret-admin-key-2024
+ADMIN_SECRET_KEY=mysecretkeyforadmin
 ```
 
 ```bash
@@ -147,12 +147,73 @@ npm run dev
 
 ---
 
+## 🔑 Admin Access
+
+To access the Admin panel, an admin user must be created using a secure secret key.
+
+### Create Admin
+
+Send a POST request to:
+
+```
+POST /api/auth/seed-admin
+```
+
+**Request Body:**
+
+```json
+{
+  "title": "Super Admin",
+  "email": "admin@example.com",
+  "password": "Admin@123",
+  "secretKey": "mysecretkeyforadmin"
+}
+```
+
+### Login as Admin
+
+After creating the admin, log in using:
+
+```
+POST /api/auth/login
+```
+
+**Request Body:**
+
+```json
+{
+  "email": "admin@example.com",
+  "password": "Admin@123"
+}
+```
+
+**On successful login:**
+
+- A JWT token will be returned
+- The user role will be `"ADMIN"`
+
+### Access Admin Panel
+
+- Use the token in Authorization header:
+
+  ```
+  Authorization: Bearer <token>
+  ```
+
+- Admin users can:
+  - View all tickets
+  - Access all conversations (threads)
+  - Reply to any ticket
+  - Mark tickets as resolved
+
+---
+
 ## 🌐 Hosted URL
 
 > **Note**: Update these URLs when deploying
 
-- **Frontend**: `<your deployed frontend URL>`
-- **Backend**: `<your deployed backend URL>`
+- **Frontend**: https://support-ticket-one.vercel.app
+- **Backend**: https://support-ticket-0hwg.onrender.com/
 
 ---
 
@@ -160,21 +221,21 @@ npm run dev
 
 ### Authentication Routes
 
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| POST | `/api/auth/register` | Register new user | Public |
-| POST | `/api/auth/login` | Login user | Public |
-| GET | `/api/auth/me` | Get current user | Protected |
+| Method | Endpoint             | Description       | Access    |
+| ------ | -------------------- | ----------------- | --------- |
+| POST   | `/api/auth/register` | Register new user | Public    |
+| POST   | `/api/auth/login`    | Login user        | Public    |
+| GET    | `/api/auth/me`       | Get current user  | Protected |
 
 ### Ticket Routes
 
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| POST | `/api/tickets` | Create new ticket | Authenticated |
-| GET | `/api/tickets` | Get all tickets | Admin Only |
-| GET | `/api/tickets/:id` | Get ticket by ID | Owner/Admin |
-| POST | `/api/tickets/:id/status` | Update ticket status | Admin Only |
-| POST | `/api/tickets/:id/reply` | Update AI reply | Admin Only |
+| Method | Endpoint                  | Description          | Access        |
+| ------ | ------------------------- | -------------------- | ------------- |
+| POST   | `/api/tickets`            | Create new ticket    | Authenticated |
+| GET    | `/api/tickets`            | Get all tickets      | Admin Only    |
+| GET    | `/api/tickets/:id`        | Get ticket by ID     | Owner/Admin   |
+| POST   | `/api/tickets/:id/status` | Update ticket status | Admin Only    |
+| POST   | `/api/tickets/:id/reply`  | Update AI reply      | Admin Only    |
 
 ---
 
