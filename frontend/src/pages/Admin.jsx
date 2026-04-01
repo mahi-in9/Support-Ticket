@@ -17,7 +17,10 @@ function Ticket() {
     navigate(`/admin/${id}`);
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return;
+  <main className="min-h-screen flex align-middle justify-center m-8">
+    <p>Loading...</p>;
+  </main>;
 
   return (
     <div className="m-3  ">
