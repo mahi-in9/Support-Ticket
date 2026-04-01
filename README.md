@@ -217,6 +217,15 @@ POST /api/auth/login
 
 ---
 
+## 🧪 Demo Credentials
+
+Admin:
+email: admin@example.com  
+password: Admin@123
+
+User:
+Create via register endpoint
+
 ## 📡 API Endpoints
 
 ### Authentication Routes
@@ -229,15 +238,15 @@ POST /api/auth/login
 
 ### Ticket Routes
 
-| Method | Endpoint                  | Description          | Access        |
-| ------ | ------------------------- | -------------------- | ------------- |
-| POST   | `/api/tickets`            | Create new ticket    | Authenticated |
-| GET    | `/api/tickets`            | Get all tickets      | Admin Only    |
-| GET    | `/api/tickets/:id`        | Get ticket by ID     | Owner/Admin   |
-| POST   | `/api/tickets/:id/status` | Update ticket status | Admin Only    |
-| POST   | `/api/tickets/:id/reply`  | Update AI reply      | Admin Only    |
-
----
+| Method | Endpoint                    | Description                    | Access        |
+| ------ | --------------------------- | ------------------------------ | ------------- |
+| POST   | `/api/tickets`              | Create new ticket              | Authenticated |
+| GET    | `/api/tickets`              | Get all tickets                | Admin Only    |
+| GET    | `/api/tickets/:id`          | Get ticket by ID               | Owner/Admin   |
+| POST   | `/api/tickets/:id/status`   | Update ticket status           | Admin Only    |
+| POST   | `/api/tickets/:id/reply`    | Update AI reply                | Admin/USER    |
+| GET    | `/api/tickets/:id/messages` | Get ticket conversation thread | Admin         |
+| POST   | `/api/tickets/:id/reply`    | Send message                   | USER/ADMIN    |
 
 ## 📝 Assumptions Made
 
@@ -267,8 +276,6 @@ POST /api/auth/login
 - The AI processing happens asynchronously - tickets are created immediately while AI generates suggestions in the background
 - The frontend auto-refreshes ticket details every 3 seconds while AI is processing
 - Admin users can select from suggested replies or create custom responses
-- Regular users can view AI suggestions but cannot modify them
-- All API responses follow a consistent format with `success`, `message`, and `data` fields
 
 ---
 
