@@ -39,7 +39,7 @@ const Login = () => {
           </h2>
           <p className="mt-2 text-sm text-gray-600">Sign in to your account</p>
         </div>
-        <p>Use this credentials to login as admin</p>\
+        <p>Use this credentials to login as admin</p>
         <p className="text-sm text-gray-600">
           Email: mahi@admin.com, Password: 1234
         </p>
